@@ -1,0 +1,64 @@
+{
+  "common": {
+    "god": "Dumnezeu",
+    "devil": "Diavol",
+    "goPremium": "Devino Premium",
+    "premium": "Premium",
+    "notifications": "Notificări",
+    "choosePath": "Alege drumul tău",
+    "back": "Înapoi",
+    "close": "Închide"
+  },
+  "premium": {
+    "benefit_notifications_god": "Notificări divine de la Dumnezeu",
+    "benefit_notifications_devil": "Alerte mistice de la Diavol",
+    "active": "Premium activ"
+  },
+  "chat": {
+    "badge": "Chat cu {{persona}}",
+    "helperGod": "Linie directă spre cer — rămâi conectat.",
+    "helperDevil": "O șoaptă din adânc — rămâi atent, păcătosule.",
+    "offline": "Nu există conexiune la internet. Conectează-te la internet.",
+    "placeholder": "Scrie un mesaj...",
+    "send": "Trimite",
+    "error": "Nu am putut trimite mesajul. Încearcă din nou.",
+    "noReply": "Fără răspuns în acest moment.",
+    "limitReached": "Ai atins limita zilnică de mesaje. Activează Premium pentru mesaje nelimitate și acces la Dumnezeu.",
+    "limitInfo": "Mesaje gratuite rămase azi: {{count}}",
+    "limitInfoPremium": "Nelimitat cu Premium. Deblochează acum.",
+    "serverError": "Serverul este aglomerat. Încearcă din nou.",
+    "serverUnavailable": "Serviciu indisponibil. Reîncearcă în scurt timp.",
+    "historyTitle": "Mesaje recente"
+  },
+  "paywall": {
+    "title": "Activează Puterea Divină",
+    "subtitle": "Alege-ți destinul. Devino nelimitat.",
+    "tag": "Cel mai popular",
+    "benefits": [
+      "Acces la Dumnezeu și Diavol",
+      "Mesaje nelimitate",
+      "Fără reclame"
+    ],
+    "cta": "Activează Premium",
+    "ctaActive": "Premium activ",
+    "reassurance": "Doar 7.99€/lună – Poți anula oricând",
+    "language": "Limba",
+    "switchRo": "Română",
+    "switchEn": "English",
+    "restore": "Restaurează achizițiile",
+    "loading": "Se procesează..."
+  },
+  "notifications": {
+    "title": "Notificări",
+    "subtitle": "Primește mesaje de la Dumnezeu și de la Diavol chiar și când nu ești în aplicație.",
+    "godLabel": "Primește notificări de la Dumnezeu",
+    "devilLabel": "Primește notificări de la Diavol",
+    "premiumOnly": "Doar pentru Premium",
+    "permissionDenied": "Pentru a primi mesaje, activează notificările în setările telefonului.",
+    "toggleInfo": "Poți dezactiva oricând notificările din acest ecran.",
+    "enable": "Activează",
+    "disable": "Dezactivează",
+    "turnOffAll": "Oprește toate notificările",
+    "turnedOff": "Toate notificările au fost oprite."
+  }
+}

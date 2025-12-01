@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: heaven-or-hell-api
+    env: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: node index.js
+    autoDeploy: true
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false # set in Render dashboard
+      - key: PORT
+        value: 10000 # Render provides PORT; this is a fallback/env hint

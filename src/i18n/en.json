@@ -1,0 +1,64 @@
+{
+  "common": {
+    "god": "God",
+    "devil": "Devil",
+    "goPremium": "Go Premium",
+    "premium": "Premium",
+    "notifications": "Notifications",
+    "choosePath": "Choose your path",
+    "back": "Back",
+    "close": "Close"
+  },
+  "premium": {
+    "benefit_notifications_god": "Divine notifications from God",
+    "benefit_notifications_devil": "Mystical alerts from the Devil",
+    "active": "Premium Active"
+  },
+  "chat": {
+    "badge": "Chat with {{persona}}",
+    "helperGod": "A quiet line to the heavens—stay connected.",
+    "helperDevil": "A whisper from the pit—stay tuned, sinner.",
+    "offline": "No internet connection. Please connect to the internet.",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "error": "Could not send message. Please try again.",
+    "noReply": "No reply at the moment.",
+    "limitReached": "Daily limit reached. Activate Premium for unlimited messages and access to God.",
+    "limitInfo": "Free messages left today: {{count}}",
+    "limitInfoPremium": "Unlimited with Premium. Unlock now.",
+    "serverError": "Our server is busy. Please try again.",
+    "serverUnavailable": "Service unavailable. Try again soon.",
+    "historyTitle": "Recent messages"
+  },
+  "paywall": {
+    "title": "Unlock Divine Power",
+    "subtitle": "Choose your destiny. Become limitless.",
+    "tag": "Most Popular",
+    "benefits": [
+      "Access to God & Devil",
+      "Unlimited messages",
+      "No ads"
+    ],
+    "cta": "Activate Premium",
+    "ctaActive": "Premium Active",
+    "reassurance": "Only €7.99/month – Cancel anytime",
+    "language": "Language",
+    "switchRo": "Română",
+    "switchEn": "English",
+    "restore": "Restore Purchases",
+    "loading": "Processing..."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Receive messages from God and Devil even when you're not in the app.",
+    "godLabel": "Receive notifications from God",
+    "devilLabel": "Receive notifications from Devil",
+    "premiumOnly": "Premium only",
+    "permissionDenied": "To receive messages, please enable notifications in your device settings.",
+    "toggleInfo": "You can turn these off anytime from this screen.",
+    "enable": "Enable",
+    "disable": "Disable",
+    "turnOffAll": "Turn off all notifications",
+    "turnedOff": "All notifications cancelled."
+  }
+}
