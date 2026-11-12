@@ -1,6 +1,7 @@
 {
   "expo": {
     "ios": {
+      "supportsTablet": true,
       "bundleIdentifier": "com.gabriellivadariu.goddevil",
       "buildNumber": "13",
       "infoPlist": {
