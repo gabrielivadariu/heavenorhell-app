@@ -5,6 +5,11 @@ import { randomUUID } from 'node:crypto';
 // at the reserved amount when the provider's actual token use is unknown.
 export class D1UsageStore {
   constructor(db) { this.db = db; }
+  async canReserve(budget, reserved = 6000) {
+    const row = await this.db.prepare('SELECT tokens FROM daily_budget WHERE day = ?')
+      .bind(new Date().toISOString().slice(0,10)).first();
+    return (row?.tokens ?? 0) + reserved <= budget;
+  }
   async counts(id) {
     return await this.db.prepare('SELECT god, devil, council, total FROM daily_usage WHERE day = ? AND user_id = ?')
       .bind(new Date().toISOString().slice(0,10), id).first() ?? {god:0,devil:0,council:0,total:0};

@@ -15,6 +15,7 @@ export class UsageStore {
     return this.data;
   }
   counts(id) { return this.today().users[id] ?? {god:0, devil:0, council:0, total:0}; }
+  async canReserve(budget, reserved = 6000) { return this.today().tokens + reserved <= budget; }
   async reserve(id, role, premium, dailyLimit, budget, reserved = 6000) {
     const data = this.today();
     const count = this.counts(id);

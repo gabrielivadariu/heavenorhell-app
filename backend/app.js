@@ -60,7 +60,14 @@ export function createApp({ openai, store, env = process.env, premiumLookup, pro
     else premiumCache.delete(id);
     return result;
   }
-  app.get("/health", (_req,res) => res.json({ok:true,apiVersion:2,paidChatReady:productionReady && providerConfirmed && Date.now() >= providerPausedUntil,limits:{free:FREE_LIMITS,premium:PREMIUM_DAILY_LIMIT}}));
+  app.get("/health", async (_req,res) => {
+    try {
+      const capacity = await store.canReserve(tokenBudget);
+      res.json({ok:true,apiVersion:2,paidChatReady:productionReady && providerConfirmed && capacity && Date.now() >= providerPausedUntil,limits:{free:FREE_LIMITS,premium:PREMIUM_DAILY_LIMIT}});
+    } catch {
+      res.status(503).json({ok:false,apiVersion:2,paidChatReady:false});
+    }
+  });
   app.post("/api/session",rateLimit,(req,res) => {
     // Mint a new unguessable identity; never sign a caller-chosen RevenueCat ID.
     const id=`hh_${randomBytes(24).toString("hex")}`;

@@ -29,6 +29,7 @@ test('D1 token budget is shared and cannot be overspent by concurrent identities
   assert.equal(results.filter(r=>!r.error).length,2);
   assert.equal(results.filter(r=>r.error==='capacity').length,8);
   assert.equal((await store.counts('u2')).total,0);
+  assert.equal(await new D1UsageStore(db).canReserve(12000),false);
 });
 test('D1 settlement is idempotent and refunds failed reply allowance but preserves ambiguous charges',async t=>{
   const {sql,store}=fixture(t);

@@ -29,6 +29,13 @@ async function fixture(t, {premium=false,completion,env={}}={}) {
 }
 const question={role:"god",language:"ro",message:"Mă simt neliniștit.",history:[]};
 
+test('new Premium checkout closes when the durable daily token budget is exhausted',async t=>{
+  const {base,store}=await fixture(t,{env:{REVENUECAT_SECRET_API_KEY:'test-key'}});
+  assert.equal((await (await fetch(base+'/health')).json()).paidChatReady,true);
+  await store.reserve('budget-check','god',false,10,300000,300000);
+  assert.equal((await (await fetch(base+'/health')).json()).paidChatReady,false);
+});
+
 test("one user message uses one model call and includes bounded conversation history",async t=>{
   const {post,token,calls}=await fixture(t);
   const result=await post("/api/chat",{...question,history:[{role:"user",content:"My name is Ana"},{role:"assistant",content:"Hello Ana"}]},token);

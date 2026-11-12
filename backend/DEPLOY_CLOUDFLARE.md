@@ -30,7 +30,7 @@ Use the existing persistent signing secret; rotating it invalidates installation
 
 Verify `/health` and a minted `/api/session`. Point `EXPO_PUBLIC_API_BASE_URL` in the app and EAS production environment at the actual deployed `workers.dev` HTTPS URL before creating the device release build.
 
-`PAID_CHAT_ENABLED=false` and `AI_VERIFIED=false` keep checkout disabled. After adding API credit, verify real chat responses and the model, then native sandbox purchase/restore and server entitlement checks. Only then explicitly enable both flags and deploy again. A successful free chat can confirm provider readiness inside its current Worker instance, but the checkout flag remains authoritative.
+`PAID_CHAT_ENABLED=false` and `AI_VERIFIED=false` keep checkout disabled. After adding API credit, verify real chat responses and the model with checkout still disabled. While version 1.1 is limited to internal TestFlight, enable both flags to validate sandbox purchase/cancellation/restore and server entitlement checks. Return the checkout flag to false if validation fails. Complete these tests before public App Review or release; never validate with a real-money purchase. A successful free chat can confirm provider readiness inside its current Worker instance, but the checkout flag remains authoritative.
 
 ## Storage and tests
 
