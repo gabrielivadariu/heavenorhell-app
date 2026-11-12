@@ -1,6 +1,7 @@
 import { API_BASE_URL, PersonaRole } from "../config";
 import { getInstallation, resetInstallation } from "./installation";
 import { CouncilReply, contextFor, Message } from "./conversations";
+import { hasAiConsent } from './aiConsent';
 export class ChatApiError extends Error {
   constructor(public code:string) {super(code);}
 }
@@ -26,6 +27,7 @@ export async function getCapabilities():Promise<{paidChatReady:boolean}> {
   } catch {return {paidChatReady:false};} finally {clearTimeout(timer);}
 }
 export async function sendChat({role,message,language,history}:{role:PersonaRole;message:string;language:string;history:Message[]}):Promise<{reply?:string;council?:CouncilReply;remaining:number;premium:boolean}> {
+  if (!(await hasAiConsent())) throw new ChatApiError('consent_required');
   const {token}=await getInstallation();
   try {
     const data=await readJson("/api/chat",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`},body:JSON.stringify({role,message,language,history:contextFor(history)})});

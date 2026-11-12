@@ -13,7 +13,7 @@ if(Number(process.versions.node.split('.')[0])<22){
 }
 const [entry,...args]=process.argv.slice(2);
 if(!entry)throw new Error('A Node entrypoint is required.');
-const child=spawn(runtime,[resolve(entry),...args],{stdio:'inherit',env:{...process.env,PATH:dirname(runtime)+delimiter+(process.env.PATH||'')}});
+const child=spawn(runtime,[entry.startsWith('-')?entry:resolve(entry),...args],{stdio:'inherit',env:{...process.env,PATH:dirname(runtime)+delimiter+(process.env.PATH||'')}});
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>child.kill(signal));
 child.on('error',error=>{console.error(error.message);process.exitCode=1;});
 child.on('exit',(code,signal)=>process.exit(code??(signal==='SIGINT'?130:1)));

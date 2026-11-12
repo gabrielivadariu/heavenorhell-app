@@ -228,6 +228,12 @@
     "backendUnavailable": "Premium er ikke tilgjengelig ennå. Nyt den gratis opplevelsen mens vi klargjør butikktilkoblingen.",
     "purchaseReady": "Fortsett med Premium",
     "restoreSuccess": "Premium-tilgangen din er gjenopprettet.",
-    "support": "Kontakt kundestøtte"
+    "support": "Kontakt kundestøtte",
+    "aiConsentTitle": "Du velger hva du deler",
+    "aiConsentBody": "For KI-svar sendes meldingen din og den siste samtalekonteksten til serveren vår hos Cloudflare, deretter til OpenAI. Historikk og dagbok lagres på denne enheten. Du kan avslå og fortsatt bruke dagboken og pusteøvelsen. Du kan trekke tillatelsen tilbake i Innstillinger.",
+    "aiConsentAllow": "Tillat og send meldingen",
+    "aiConsentDecline": "Ikke nå",
+    "aiConsentRevoke": "Trekk tilbake tillatelse til KI-deling",
+    "aiConsentRevoked": "Tillatelsen er trukket tilbake. Vi spør igjen før neste melding."
   }
 }

@@ -11,6 +11,7 @@ import { palette } from "../theme/tokens";
 import { loadReminders, reconcileReminders, ReminderPreferences } from "../services/reminders";
 import { clearAllConversations } from "../services/conversations";
 import { CONTACT_EMAIL } from "../constants/legal";
+import { revokeAiConsent } from '../services/aiConsent';
 type Props=NativeStackScreenProps<RootStackParamList,"Notifications">;
 export default function NotificationSettingsScreen({navigation}:Props) {
   const {t,language,setLanguage}=useTranslation();const {isPremium,isChecking}=usePremium();const insets=useSafeAreaInsets();
@@ -47,6 +48,7 @@ export default function NotificationSettingsScreen({navigation}:Props) {
     </View>
     <View style={ui.card}><View style={ui.row}><Icon name="sparkles-outline" color={palette.gold}/><Text style={styles.rowTitle}>{t(isPremium?"paywall.ctaActive":"common.premium")}</Text></View><Text style={ui.body}>{t("experience.premiumDescription")}</Text><Button secondary label={t(isPremium?"experience.manage":"common.goPremium")} onPress={()=>isPremium?manage():navigation.navigate("Paywall")}/></View>
     <Text style={ui.eyebrow}>{t("experience.localData")}</Text>
+    <View style={ui.card}><Text style={styles.rowTitle}>{t('experience.aiConsentTitle')}</Text><Text style={ui.body}>{t('experience.aiConsentBody')}</Text><Button secondary label={t('experience.aiConsentRevoke')} onPress={()=>{revokeAiConsent().then(()=>Alert.alert(t('experience.aiConsentRevoked'))).catch(()=>Alert.alert(t('experience.errors.storage')));}}/></View>
     <View style={ui.card}><Icon name="lock-closed-outline" color={palette.muted}/><Text style={ui.body}>{t("experience.dataBody")}</Text><Pressable accessibilityRole="button" onPress={deleteData} style={styles.delete}><Icon name="trash-outline" color={palette.ember} size={17}/><Text style={{color:palette.ember,fontSize:12,flex:1}}>{t("experience.deleteData")}</Text></Pressable></View>
     <Pressable accessibilityRole="button" onPress={()=>navigation.navigate("Legal")} style={[ui.card,ui.between]}><Text style={styles.rowTitle}>{t("experience.legal")}</Text><Icon name="chevron-forward" color={palette.muted} size={18}/></Pressable>
     <Pressable accessibilityRole="button" onPress={()=>{Linking.openURL(`mailto:${CONTACT_EMAIL}`).catch(()=>{});}} style={styles.support}><Text style={ui.body}>{t("experience.support")}</Text></Pressable>

@@ -22,7 +22,7 @@ Free server allowances: God 10/day, Devil 3/day, Two voices 1/day. Verified Prem
 
 The verified account report is kept locally in `docs/ACCOUNT-CONFIGURATION.md` and excluded from Git. Deployment requirements are documented in `backend/DEPLOY_RENDER.md`.
 
-The new API should deploy separately from the existing backend used by app version 1.0.3. Keep checkout disabled with `PAID_CHAT_ENABLED=false` until persistent storage, real AI credit and native sandbox tests are ready. The single-process ledger requires persistent storage; use a shared transactional database before adding replicas. Anonymous signed installations are not cross-device user accounts, and reinstall/identity cycling still requires additional app/device attestation before scaling.
+The owner selected free hosting. The new API targets Cloudflare Workers Free + D1 separately from the existing Render backend used by app version 1.0.3; see `backend/DEPLOY_CLOUDFLARE.md`. D1 uses atomic SQL triggers for shared allowances and token reservations. Keep checkout disabled with `PAID_CHAT_ENABLED=false` until persistent storage, real AI credit and native sandbox tests are ready. The alternative local file ledger requires a persistent single-process host. Anonymous signed installations are not cross-device user accounts, and reinstall/identity cycling still requires additional app/device attestation before scaling.
 
 OpenAI remains the existing metered API integration; generation is one call per reply instead of the old detection + answer + translation chain. A tiny budgeted startup probe checks provider readiness. Live generation and model-quality evaluation remain pending owner provisioning of API credit. The existing model is configurable through `OPENAI_MODEL`; do not claim a free model or silently substitute a provider. Review a supported replacement for deprecated GPT-4o mini once credit is available.
 
@@ -30,8 +30,16 @@ OpenAI remains the existing metered API integration; generation is one call per 
 
 TypeScript and subscription/conversation/backend tests pass on the migrated code. The SDK 57 browser smoke test passed chat, save, journal, Two voices, disabled unavailable checkout, language persistence and the breathing ritual. UI tests use an explicit simulated-response fixture, never a fake fallback in production. SDK 57 iOS JavaScript/Hermes export and native prebuild succeeded. A JavaScript export is not a signed binary or proof of StoreKit payment behavior.
 
+On 12 November, the EAS iOS simulator build [completed successfully](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/builds/d5265d09-18ed-4efb-9d71-da9e7493a72d). It validates native compilation and predates the final Cloudflare URL switch; it is not a device or TestFlight release. The current suite has 35 passing tests, including five D1 atomic ledger tests and three AI-sharing permission tests. The actual Workers runtime also passed local health/session/unsigned-request/invalid-payload checks without model calls. Backend production dependencies have zero reported vulnerabilities.
+
+Cloudflare Worker `heaven-hell-api-v2` and D1 database `heaven-hell-usage` are deployed on the confirmed Free plan. Mobile local and EAS production configuration point to `https://heaven-hell-api-v2.livadariu-ga.workers.dev`. Live HTTPS health, session minting, unsigned-request and invalid-payload checks passed without AI calls. Device validation must complete before release. No monthly hosting subscription was purchased.
+
+Signed iOS production build 15 is being prepared [on EAS](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/builds/c05ec8c8-4045-4602-af11-6eb246d25668), with the Cloudflare API URL and explicit AI-sharing permission. Build 14 was canceled before adding that permission flow. It is separate from the simulator compilation artifact above. Automatic App Store submission is disabled.
+
 No App Store review submission, public app release, real-money purchase or API credit purchase has been performed. A source branch and account drafts are review artifacts; they do not automatically deploy the existing live service.
 
 ## Artifacts
 
 Artwork: `assets/sanctuary-portal.jpg`; [Imagegen prompt](IMAGE-PROMPT.md). Existing published app icon preserved as `assets/app-icon.png`. UI previews: `docs/previews/`; files containing `fixture` use simulated replies.
+
+Explicit AI-sharing permission is required before sending message text or recent context through Cloudflare to OpenAI. Decline leaves the draft message in place and sends no chat request. Permission can be withdrawn in Settings. Service tests enforce the guard before installation/network requests, and the browser test verifies decline then acceptance. The public privacy policy was updated to explain actual processing. App Store version 1.1 promotional text, description, changes and review notes are saved as a draft with manual release selected. Review notes explicitly record outstanding validation; no public review was requested.

@@ -4,6 +4,8 @@ backend/.env
 .expo
 .DS_Store
 backend/data/
+backend/.wrangler/
+backend/.dev.vars
 node_modules.backup-*/
 
 .release-backup-sdk51/

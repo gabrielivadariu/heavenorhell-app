@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform, FlatList, ActivityIndicator, Alert, Share, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform, FlatList, ActivityIndicator, Alert, Share, ImageBackground, Modal, ScrollView, Linking } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,6 +11,8 @@ import { Icon, IconButton, Button, ui } from "../components/Primitives";
 import { palette, personaColors, portalArt, serif } from "../theme/tokens";
 import { loadHistory, saveHistory, clearHistory, saveReflection, getConversationRevision, Message } from "../services/conversations";
 import { sendChat, ChatApiError } from "../services/chatApi";
+import { hasAiConsent, grantAiConsent } from '../services/aiConsent';
+import { PRIVACY_POLICY_URL } from '../constants/legal';
 
 type Props=NativeStackScreenProps<RootStackParamList,"Chat">;
 export default function ChatScreen({route,navigation}:Props) {
@@ -26,6 +28,8 @@ export default function ChatScreen({route,navigation}:Props) {
   const [error,setError]=useState<string|null>(null);
   const [remaining,setRemaining]=useState<number|null>(null);
   const [saved,setSaved]=useState<string[]>([]);
+  const [consentVisible,setConsentVisible]=useState(false);
+  const [consentBusy,setConsentBusy]=useState(false);
   const list=useRef<FlatList<Message>>(null);
   const lock=useRef(false);
   const accent=personaColors[role];
@@ -41,6 +45,11 @@ export default function ChatScreen({route,navigation}:Props) {
   const onSend=async()=>{
     const text=input.trim();
     if(!text||lock.current||!hydrated)return;
+    lock.current=true;
+    try {
+      if (!(await hasAiConsent())) { setConsentVisible(true);return; }
+    } catch { setError('storage');return; }
+    finally { lock.current=false; }
     if(net.isConnected===false){setError("offline");return;}
     lock.current=true;setSending(true);setError(null);setInput("");
     const before=messages;
@@ -87,6 +96,24 @@ export default function ChatScreen({route,navigation}:Props) {
       </View>
     </View>;
   return <View style={ui.screen}>
+    <Modal visible={consentVisible} transparent animationType="fade" onRequestClose={()=>{if(!consentBusy)setConsentVisible(false);}}>
+      <View style={{flex:1,backgroundColor:'rgba(0,0,0,0.8)',justifyContent:'center',padding:24}}>
+        <ScrollView contentContainerStyle={{flexGrow:1,justifyContent:'center'}}>
+          <View accessibilityViewIsModal style={[ui.card,{gap:20,padding:24}]}>
+            <Icon name="shield-checkmark-outline" color={palette.gold} size={28}/>
+            <Text style={[ui.title,{fontSize:28}]}>{t('experience.aiConsentTitle')}</Text>
+            <Text style={ui.body}>{t('experience.aiConsentBody')}</Text>
+            <Pressable accessibilityRole="link" onPress={()=>{Linking.openURL(PRIVACY_POLICY_URL).catch(()=>setError('service_unavailable'));}} style={{minHeight:44,justifyContent:'center'}}><Text style={{color:palette.gold}}>{t('paywall.privacyLink')}</Text></Pressable>
+            <Button label={t('experience.aiConsentAllow')} loading={consentBusy} onPress={async()=>{
+              if(consentBusy)return;setConsentBusy(true);
+              try{await grantAiConsent();setConsentVisible(false);await onSend();}
+              catch{setError('storage');}finally{setConsentBusy(false);}
+            }}/>
+            <Button secondary label={t('experience.aiConsentDecline')} disabled={consentBusy} onPress={()=>setConsentVisible(false)}/>
+          </View>
+        </ScrollView>
+      </View>
+    </Modal>
     <ImageBackground source={portalArt} resizeMode="cover" imageStyle={{width:"100%",height:"100%"}} style={styles.backdrop}><LinearGradient colors={["rgba(11,14,18,0.35)",palette.background]} style={{flex:1}}/></ImageBackground>
     <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS==="ios"?"padding":undefined} keyboardVerticalOffset={0}>
       <View style={[styles.header,{paddingTop:insets.top+8}]}>

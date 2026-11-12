@@ -1,5 +1,5 @@
-// Default API points to the currently live backend on Render.
-const DEFAULT_API_BASE_URL = "https://god-devil-api.onrender.com";
+// Version 1.1 uses the separate Workers API; published 1.0 clients keep Render v1.
+const DEFAULT_API_BASE_URL = "https://heaven-hell-api-v2.livadariu-ga.workers.dev";
 
 const envApiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
 const apiBaseUrl = envApiBaseUrl || DEFAULT_API_BASE_URL;

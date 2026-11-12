@@ -1,0 +1,32 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "heaven-hell-api-v2",
+	"main": "cloudflare/worker.js",
+	"compatibility_date": "2026-11-12",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"workers_dev": true,
+	"observability": {
+		"enabled": false
+	},
+	"vars": {
+		"OPENAI_MODEL": "gpt-4o-mini",
+		"DAILY_TOKEN_BUDGET": "300000",
+		"REVENUECAT_ENTITLEMENT_ID": "premium",
+		"PAID_CHAT_ENABLED": "false",
+		"AI_VERIFIED": "false"
+	},
+	"triggers": {
+		"crons": [
+			"15 3 * * *"
+		]
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "heaven-hell-usage",
+			"database_id": "a5f7c47e-e93b-479f-a2ab-495a294af2c7"
+		}
+	]
+}

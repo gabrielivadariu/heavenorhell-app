@@ -2,7 +2,10 @@
   "expo": {
     "ios": {
       "bundleIdentifier": "com.gabriellivadariu.goddevil",
-      "buildNumber": "13"
+      "buildNumber": "13",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "extra": {
       "eas": {

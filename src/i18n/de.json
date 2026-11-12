@@ -228,6 +228,12 @@
     "backendUnavailable": "Premium ist noch nicht verfügbar. Genieße die kostenlose Erfahrung, während wir die Store-Verbindung vorbereiten.",
     "purchaseReady": "Mit Premium fortfahren",
     "restoreSuccess": "Dein Premium-Zugang wurde wiederhergestellt.",
-    "support": "Support kontaktieren"
+    "support": "Support kontaktieren",
+    "aiConsentTitle": "Du entscheidest, was du teilst",
+    "aiConsentBody": "Für KI-Antworten werden deine Nachricht und der aktuelle Gesprächskontext an unseren bei Cloudflare gehosteten Server und dann an OpenAI gesendet. Verlauf und Tagebuch bleiben auf diesem Gerät. Du kannst ablehnen und das Tagebuch und die Atemübung weiter nutzen. In den Einstellungen kannst du die Erlaubnis widerrufen.",
+    "aiConsentAllow": "Erlauben und Nachricht senden",
+    "aiConsentDecline": "Jetzt nicht",
+    "aiConsentRevoke": "KI-Datenfreigabe widerrufen",
+    "aiConsentRevoked": "Erlaubnis widerrufen. Vor der nächsten Nachricht fragen wir erneut."
   }
 }

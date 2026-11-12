@@ -3,16 +3,13 @@ services:
     name: god-devil-api-v2
     rootDir: backend
     env: node
-    plan: starter
+    # Free preview only. Production uses Cloudflare Workers + D1 (see DEPLOY_CLOUDFLARE.md).
+    plan: free
     region: frankfurt
     buildCommand: npm ci
     startCommand: node index.js
     healthCheckPath: /health
     autoDeploy: false
-    disk:
-      name: usage-ledger
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: 22.23.5
@@ -31,6 +28,6 @@ services:
       - key: DAILY_TOKEN_BUDGET
         value: 300000
       - key: USAGE_STORE_PATH
-        value: /var/data/usage.json
+        value: ./data/usage.json
       - key: TRUST_PROXY_HOPS
         value: 1

@@ -228,6 +228,12 @@
     "backendUnavailable": "Premium is not available yet. Please enjoy the free experience while we prepare the store connection.",
     "purchaseReady": "Continue with Premium",
     "restoreSuccess": "Your Premium access has been restored.",
-    "support": "Contact support"
+    "support": "Contact support",
+    "aiConsentTitle": "You choose what you share",
+    "aiConsentBody": "For AI replies, your message and recent conversation context are sent to our server hosted by Cloudflare, then to OpenAI. History and your journal are kept on this device. You can decline and still use the journal and breathing ritual. You can withdraw permission in Settings.",
+    "aiConsentAllow": "Allow and send message",
+    "aiConsentDecline": "Not now",
+    "aiConsentRevoke": "Withdraw AI sharing permission",
+    "aiConsentRevoked": "Permission withdrawn. We will ask again before sending a message."
   }
 }

@@ -228,6 +228,12 @@
     "backendUnavailable": "Premium nu este disponibil încă. Bucură-te de experiența gratuită cât pregătim conexiunea cu magazinul.",
     "purchaseReady": "Continuă cu Premium",
     "restoreSuccess": "Accesul Premium a fost restaurat.",
-    "support": "Contactează-ne"
+    "support": "Contactează-ne",
+    "aiConsentTitle": "Tu alegi ce împărtășești",
+    "aiConsentBody": "Pentru răspunsuri AI, mesajul tău și contextul recent al conversației sunt trimise serverului nostru găzduit de Cloudflare, apoi către OpenAI. Istoricul și jurnalul sunt păstrate pe acest dispozitiv. Poți refuza și folosi în continuare jurnalul și ritualul de respirație. Poți retrage acordul din Setări.",
+    "aiConsentAllow": "Permit și trimit mesajul",
+    "aiConsentDecline": "Nu acum",
+    "aiConsentRevoke": "Retrage acordul pentru AI",
+    "aiConsentRevoked": "Acord retras. Îți vom cere din nou permisiunea înainte de a trimite un mesaj."
   }
 }

@@ -96,7 +96,7 @@ export function createApp({ openai, store, env = process.env, premiumLookup, pro
       const payload=input.role==="council" ? {council:parseCouncil(content)} : {reply:content};
       await store.settle(reservation,actualTokens); settled=true;
       providerConfirmed = true;
-      const counts=store.counts(id);
+      const counts=await store.counts(id);
       return res.json({...payload,premium,remaining:Math.max(0,limit-(premium?counts.total:counts[input.role])),limit});
     } catch(error) {
       if (reservation && !reservation.error && !settled) {

@@ -34,6 +34,8 @@ Native projects are generated from app.json and ignored by Git/EAS. Use `npm run
 
 Read [release notes and remaining account configuration](docs/RELEASE.md). Source changes are local and do not automatically update the deployed backend or the App Store build.
 
+Version 1.1 uses [Cloudflare Workers Free + D1](backend/DEPLOY_CLOUDFLARE.md). OpenAI API credit remains separate. The published version keeps its existing Render backend.
+
 ## UI smoke test (simulated replies)
 
 With Playwright Core installed in a separate test directory, start `HH_TEST_FIXTURES=1 node tests/ui-fixture-server.mjs`, then run Metro with `EXPO_PUBLIC_API_BASE_URL=http://localhost:3001 npx expo start --web`. Run `HH_PLAYWRIGHT_PATH=/absolute/path/to/playwright-core node tests/ui-smoke.cjs`. This test writes screenshots into `docs/previews/`. Stop the fixture server before `npm run dev`; its responses are test data, not live AI.
