@@ -1,55 +1,46 @@
-# Heaven & Hell 1.1 — release preparation
+# Heaven & Hell 1.1 — release status
 
-## Implemented
+## Current delivery
 
-Cinematic home and portal artwork; God, Devil and Two voices conversations; bounded conversation context and device-local history; saved reflections and sharing; a one-minute breathing ritual; four persisted UI languages; opt-in morning/evening reminders; store-backed Premium with visible price, restore and guarded checkout.
+The redesigned app is saved on [release/wow-1.1](https://github.com/gabrielivadariu/heavenorhell-app/tree/release/wow-1.1). Version 1.0.3 and its Render backend remain unchanged.
 
-Free server allowances: God 10/day, Devil 3/day, Two voices 1/day. Verified Premium: 100 replies/day across all modes. Daily reset is at 00:00 UTC. The server uses signed installation identities, RevenueCat entitlement verification, request limits, one request in flight per identity and a persistent token ledger. API messages and recent context are sent to OpenAI; the app is explicitly fictional AI, not supernatural contact.
+The new [Cloudflare v2 API](https://heaven-hell-api-v2.livadariu-ga.workers.dev/health) and D1 usage database are deployed on the verified Workers Free plan. No monthly hosting subscription was purchased. Root mobile configuration and EAS production point to this separate HTTPS API. See [free deployment instructions](../backend/DEPLOY_CLOUDFLARE.md).
 
-## Platform migration
+Signed iOS version 1.1.0, build 16 [compiled successfully](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/builds/02a0a47e-fd2d-4623-8b63-f6013f5199eb) and was [uploaded for TestFlight processing](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/submissions/ae0f2fa0-a59b-4d9c-a94e-4b1075800b12). Apple processing completed successfully; build 16 is listed in the internal Team (Expo) group. Build 15 was rejected with error 90101; build 16 restores the iPhone+iPad device family required by the published app.
 
-- Expo SDK 57, React Native 0.86.3, React 19.2.3 and RevenueCat SDK 11.0.2.
-- Node.js 22.23.5 installed locally; `.nvmrc` and package engines record Node 22+. npm app commands automatically select an installed compatible NVM runtime without changing the global default.
-- Current Expo-compatible modules, TypeScript 6 and updated notification behavior/trigger API.
-- Removed unused Reanimated and its Babel plugin.
-- Continuous Native Generation: iOS/Android directories are generated from app.json and excluded from Git/EAS upload. Run `npm run prebuild` when native source is needed locally. Existing native projects and original Git metadata were preserved outside the project in the Desktop SDK 51 backup folder.
-- Current native projects generated successfully for iOS and Android. iOS minimum supported OS is 16.4.
-- EAS uses the `sdk-57` Xcode image, Node 22 and production environment. Scene support is enabled for Xcode 27 compatibility.
-- Expo Doctor passes 20/21 checks locally. The remaining check is the installed Xcode 26.2: SDK 57 requires Xcode 26.4+. Native compilation is therefore being prepared on EAS instead of claiming a successful local signed build.
-- Mobile dependency audit: no high/critical issues; four moderate advisories remain in the SDK 57 fingerprint/build dependency chain. Backend audit: zero vulnerabilities after compatible updates.
+App Store version 1.1 promotional text, description and changes are saved as a draft, with manual release selected. App Privacy disclosures now cover Purchase History, User ID, Product Interaction and Other User Content, with matching purposes and no advertising tracking. The public privacy policy explains actual processing and the App Store privacy URL points to it. No public App Review was requested.
 
-## Accounts and release gates
+## Implemented experience
 
-The verified account report is kept locally in `docs/ACCOUNT-CONFIGURATION.md` and excluded from Git. Deployment requirements are documented in `backend/DEPLOY_RENDER.md`.
+Cinematic home and new portal artwork; God, Devil and Two voices conversations; bounded context and device-local history; saved reflections and sharing; one-minute breathing ritual; four persisted UI languages; optional morning/evening reminders; store-backed Premium with localized price, restore and guarded checkout.
 
-The owner selected free hosting. The new API targets Cloudflare Workers Free + D1 separately from the existing Render backend used by app version 1.0.3; see `backend/DEPLOY_CLOUDFLARE.md`. D1 uses atomic SQL triggers for shared allowances and token reservations. Keep checkout disabled with `PAID_CHAT_ENABLED=false` until persistent storage, real AI credit and native sandbox tests are ready. The alternative local file ledger requires a persistent single-process host. Anonymous signed installations are not cross-device user accounts, and reinstall/identity cycling still requires additional app/device attestation before scaling.
+AI characters are explicitly fictional. Before sending the first message, the app requests permission to send that message and recent context through Cloudflare to OpenAI. Decline preserves the draft and sends no chat request. Permission can be withdrawn in Settings. History and journal can be deleted locally.
 
-OpenAI remains the existing metered API integration; generation is one call per reply instead of the old detection + answer + translation chain. A tiny budgeted startup probe checks provider readiness. Live generation and model-quality evaluation remain pending owner provisioning of API credit. The existing model is configurable through `OPENAI_MODEL`; do not claim a free model or silently substitute a provider. Review a supported replacement for deprecated GPT-4o mini once credit is available.
+Free allowances are God 10/day, Devil 3/day and Two voices 1/day. Verified Premium receives 100 replies/day across modes, resetting at 00:00 UTC. The API uses signed random installation identities, RevenueCat entitlement verification and a shared daily token budget. D1 SQL triggers atomically reserve limits across Worker instances; settlement is idempotent. New checkout closes when AI readiness, durable storage or token capacity is unavailable. Usage records older than seven days are removed by a daily job. Anonymous identities still need app/device attestation before broad scaling.
 
 ## Validation
 
-TypeScript and subscription/conversation/backend tests pass on the migrated code. The SDK 57 browser smoke test passed chat, save, journal, Two voices, disabled unavailable checkout, language persistence and the breathing ritual. UI tests use an explicit simulated-response fixture, never a fake fallback in production. SDK 57 iOS JavaScript/Hermes export and native prebuild succeeded. A JavaScript export is not a signed binary or proof of StoreKit payment behavior.
+- TypeScript and 36 automated tests pass, including subscription errors/restore, history, AI permission before network requests, shared D1 limits and token capacity.
+- Phone browser smoke passed God chat, save/journal, Two voices, unavailable checkout, consent decline/acceptance, language persistence and breathing. Replies are an explicitly guarded fixture, never a production fallback.
+- Tablet browser layouts passed at 768×1024 and 1024×768, including consent decline, with no horizontal overflow or page errors.
+- Live HTTPS health, installation minting, unsigned-request and invalid-payload checks pass without model calls. RevenueCat offerings returns HTTP 200, default offering `current`, and the approved monthly v2 product.
+- Final universal simulator build `8196bb0e-75c1-45f0-a8b3-8fc42b175c14` passed the native XCTest journey on iPhone and iPad: navigation, consent decline, preservation of the unsent draft, Two voices, breathing controls and journal. Genuine captures are in `docs/store-media/`; no model calls were made.
+- Signed build 16 compiled successfully with iPhone+iPad support and all required iPad orientations.
+- Expo Doctor passes 20/21 locally; installed Xcode 26.2 is older than SDK 57 requires. EAS supplies the compatible SDK 57 build image.
+- Backend production audit reports zero vulnerabilities. Mobile dependencies have no high/critical advisories; four moderate issues remain in the Expo SDK 57 build dependency chain.
 
-On 12 November, the EAS iOS simulator build [completed successfully](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/builds/d5265d09-18ed-4efb-9d71-da9e7493a72d). It validates native compilation and predates the final Cloudflare URL switch; it is not a device or TestFlight release. The current suite has 36 passing tests, including five D1 atomic ledger tests and three AI-sharing permission tests. The actual Workers runtime also passed local health/session/unsigned-request/invalid-payload checks without model calls. Backend production dependencies have zero reported vulnerabilities.
+## Remaining release gates
 
-Cloudflare Worker `heaven-hell-api-v2` and D1 database `heaven-hell-usage` are deployed on the confirmed Free plan. Mobile local and EAS production configuration point to `https://heaven-hell-api-v2.livadariu-ga.workers.dev`. Live HTTPS health, session minting, unsigned-request and invalid-payload checks passed without AI calls. Device validation must complete before release. No monthly hosting subscription was purchased.
+The owner will provision OpenAI API credit later. No credit purchase was made. Real generation/model quality and native sandbox purchase, cancellation, pending payment, restore and entitlement activation remain unverified. `PAID_CHAT_ENABLED=false` and `AI_VERIFIED=false` deliberately keep new checkout disabled. Enable for internal sandbox validation only after real AI is working; finish those tests before public release.
 
-Signed iOS production build 15 completed successfully [on EAS](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/builds/c05ec8c8-4045-4602-af11-6eb246d25668), with the Cloudflare API URL and explicit AI-sharing permission. Build 14 was canceled before adding that permission flow. It is separate from the simulator compilation artifact above. Automatic App Store submission is disabled.
+Complete real AI and native StoreKit validation, the missing App Review contact fields and final metadata review before requesting public App Review. Review notes are prepared locally but cannot be saved until contact information is supplied. The model remains configurable via `OPENAI_MODEL`; do not claim free AI or silently replace the provider. Generation uses one call per reply instead of the old detection/answer/translation chain.
 
-No App Store review submission, public app release, real-money purchase or API credit purchase has been performed. A source branch and account drafts are review artifacts; they do not automatically deploy the existing live service.
+## Platform and artifacts
 
-## Artifacts
+Expo SDK 57, React Native 0.86.3, React 19.2.3, RevenueCat 11.0.2 and TypeScript 6. Node 22 is selected by the npm command wrapper without changing the global default. Generated native projects are excluded from Git/EAS and regenerated from app.json. Original native projects, Git metadata and SDK 51 files were preserved outside the project. Scene support is enabled; iOS minimum is 16.4.
 
-Artwork: `assets/sanctuary-portal.jpg`; [Imagegen prompt](IMAGE-PROMPT.md). Existing published app icon preserved as `assets/app-icon.png`. UI previews: `docs/previews/`; files containing `fixture` use simulated replies.
+Artwork: `assets/sanctuary-portal.jpg`; [image prompt](IMAGE-PROMPT.md). The published icon is preserved. [Store metadata](app-store-metadata.json) and `docs/previews/` are review artifacts; names containing `fixture` identify simulated replies. Private account verification notes are local and excluded from Git.
 
-Explicit AI-sharing permission is required before sending message text or recent context through Cloudflare to OpenAI. Decline leaves the draft message in place and sends no chat request. Permission can be withdrawn in Settings. Service tests enforce the guard before installation/network requests, and the browser test verifies decline then acceptance. The public privacy policy was updated to explain actual processing. App Store version 1.1 promotional text, description, changes and review notes are saved as a draft with manual release selected. Review notes explicitly record outstanding validation; no public review was requested.
+## Media audit
 
-Build 15 was uploaded successfully to App Store Connect through [EAS Submit](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/submissions/5310de2d-90e6-48c0-9d31-79be1965c779). This uploads for TestFlight processing; it does not request public App Review. App Privacy disclosures were corrected from “Data Not Collected” to Purchase History, User ID, Product Interaction and Other User Content, with purposes matching the implementation and no advertising tracking. The privacy policy URL now points to the maintained public page.
-
-Apple processing rejected build 15 with error 90101: the previous published binary supported iPhone and iPad (`TARGETED_DEVICE_FAMILY=1,2`), while the regenerated configuration declared only iPhone. `ios.supportsTablet=true` restores the previous device family. A replacement signed build is being prepared; build 15 is not available for TestFlight testing.
-
-Replacement build 16: https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/builds/02a0a47e-fd2d-4623-8b63-f6013f5199eb . Its processing result supersedes build 15.
-
-The iPad browser layout passed at 768×1024 and 1024×768: home, chat, permission decline, no horizontal overflow or page errors. Expo device-family configuration resolves to iPhone+iPad with all four iPad orientations for multitasking.
-
-New checkout also closes when the durable daily token budget lacks reply capacity or its storage is unavailable. This guard is covered by the backend tests; budget reservations remain atomic across Worker instances.
+The user supplied five framed iPhone screenshots representing the new design. They are preserved. Old large-iPhone overrides were removed so the current set scales automatically. Five native iPad captures replace the old 2025 draft images. See [media evidence and reproduction](store-media/README.md).
