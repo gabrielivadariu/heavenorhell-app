@@ -7,15 +7,21 @@ import PaywallScreen from "../screens/PaywallScreen";
 import NotificationSettingsScreen from "../screens/NotificationSettingsScreen";
 import PortalTransitionScreen from "../screens/PortalTransitionScreen";
 import SplashScreen from "../screens/SplashScreen";
-import { PersonaRole } from "../config";
+import RitualScreen from "../screens/RitualScreen";
+import JournalScreen from "../screens/JournalScreen";
+import LegalScreen from "../screens/LegalScreen";
+import type { PersonaRole } from "../config";
 
 export type RootStackParamList = {
   Splash: undefined;
   PortalTransition: { role: PersonaRole };
   RoleSelection: undefined;
   Paywall: undefined;
-  Chat: { role: PersonaRole };
+  Chat: { role: PersonaRole; initialPrompt?: string };
+  Journal: undefined;
+  Ritual: undefined;
   Notifications: undefined;
+  Legal: { section?: "terms" | "privacy" } | undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -26,7 +32,9 @@ export default function AppNavigator() {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{
-          headerShown: false
+          headerShown: false,
+          contentStyle: { backgroundColor: "#0B0E12" },
+          animation: "fade"
         }}
       >
         <Stack.Screen name="Splash" component={SplashScreen} />
@@ -35,6 +43,9 @@ export default function AppNavigator() {
         <Stack.Screen name="Paywall" component={PaywallScreen} />
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="Notifications" component={NotificationSettingsScreen} />
+        <Stack.Screen name="Journal" component={JournalScreen} />
+        <Stack.Screen name="Ritual" component={RitualScreen} />
+        <Stack.Screen name="Legal" component={LegalScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

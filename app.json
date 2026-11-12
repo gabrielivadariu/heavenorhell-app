@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "com.gabriellivadariu.goddevil",
+      "buildNumber": "13"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d8b99d88-cfd7-46fe-b687-a89fd8f12779"
+      }
+    },
+    "name": "Heaven & Hell",
+    "slug": "heaven-or-hell-app",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": [
+      "assets/*"
+    ],
+    "android": {
+      "package": "com.gabriellivadariu.goddevil",
+      "versionCode": 2
+    },
+    "icon": "./assets/app-icon.png",
+    "plugins": [
+      "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0B0E12",
+          "image": "./assets/app-icon.png",
+          "imageWidth": 180
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "enableSceneSupport": true
+          }
+        }
+      ]
+    ]
+  }
+}

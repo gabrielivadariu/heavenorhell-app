@@ -1,10 +1,16 @@
 import React from "react";
+import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LanguageProvider } from "./src/context/LanguageContext";
 import { PremiumProvider } from "./src/context/PremiumContext";
 import AppNavigator from "./src/navigation/AppNavigator";
+
+if (Platform.OS !== "web") Notifications.setNotificationHandler({
+  handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false })
+});
 
 export default function App() {
   return (

@@ -3,3 +3,14 @@ node_modules
 backend/.env
 .expo
 .DS_Store
+backend/data/
+node_modules.backup-*/
+
+.release-backup-sdk51/
+
+# Generated native projects; Expo Prebuild regenerates them for the selected SDK.
+/ios/
+/android/
+
+# Private account verification notes are local operational records.
+docs/ACCOUNT-CONFIGURATION.md

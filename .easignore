@@ -1,0 +1,18 @@
+node_modules/
+node_modules.backup-*/
+.release-backup-sdk51/
+.git/
+.expo/
+.env
+.env.*
+!.env.example
+backend/
+backend.log
+docs/
+tests/
+heavenorhell/
+0
+
+# Generated native projects; Expo Prebuild regenerates them for the selected SDK.
+/ios/
+/android/

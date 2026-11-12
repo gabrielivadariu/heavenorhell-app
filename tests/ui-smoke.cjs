@@ -1,0 +1,61 @@
+// Run against the local Metro web preview and the explicit fixture server.
+// This checks UI behavior; it does not verify model quality or store payments.
+const assert=require('node:assert/strict');
+const path=require('node:path');
+const {chromium}=require(process.env.HH_PLAYWRIGHT_PATH||'playwright-core');
+(async()=>{
+ const browser=await chromium.launch({executablePath:process.env.HH_CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+ const page=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:2,locale:'ro-RO'});
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ const screenshot=name=>page.screenshot({path:path.resolve('docs/previews',`${name}.png`)});
+ const back=()=>page.getByRole('button',{name:'Înapoi',exact:true}).click();
+ const checkWidth=async()=>assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),'horizontal viewport overflow');
+ try{
+  await page.goto(process.env.HH_PREVIEW_URL||'http://localhost:8081',{waitUntil:'networkidle',timeout:60000});
+  await page.getByText('Cui vrei să te adresezi?',{exact:true}).waitFor();
+  await checkWidth();await screenshot('home');
+  await page.getByRole('button').filter({has:page.getByText('Dumnezeu',{exact:true})}).click();
+  await page.getByText('Poți lăsa grijile aici.',{exact:true}).waitFor();
+  await screenshot('chat-welcome');
+  await page.getByRole('textbox',{name:'Ce ai pe suflet?'}).fill('Mă simt copleșit. Cu ce încep?');
+  await page.getByRole('button',{name:'Trimite',exact:true}).click();
+  await page.getByText('Salvează',{exact:true}).waitFor();
+  await page.getByText('Salvează',{exact:true}).click();
+  await page.getByText('Salvat',{exact:true}).waitFor();
+  await screenshot('chat-reply-fixture');
+  await back();
+  await page.getByRole('button',{name:'Jurnalul tău',exact:true}).click();
+  await page.getByText('Cuvinte de păstrat.',{exact:true}).waitFor();
+  await page.getByText(/Matei 6:34/).waitFor();
+  await screenshot('journal-fixture');
+  await back();
+  await page.getByRole('button').filter({has:page.getByText('Două voci, o alegere',{exact:true})}).click();
+  await page.getByText('O dilemă. Două voci foarte diferite.',{exact:true}).waitFor();
+  await page.getByRole('textbox',{name:'Ce ai pe suflet?'}).fill('Să schimb locul de muncă sau să mai aștept?');
+  await page.getByRole('button',{name:'Trimite',exact:true}).click();
+  await page.getByText('Salvează',{exact:true}).waitFor();
+  assert.ok((await page.locator('body').innerText()).includes('Care este cel mai mic pas'));
+  await screenshot('two-voices-fixture');
+  await back();
+  await page.getByRole('button').filter({has:page.getByText('Descoperă totul cu Premium',{exact:true})}).click();
+  await page.getByText('Premium indisponibil',{exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'Premium indisponibil',exact:true}).isDisabled(),true);
+  await checkWidth();await screenshot('premium-unavailable');
+  await page.getByRole('button',{name:'Închide',exact:true}).click();
+  await page.getByRole('button',{name:'Setări',exact:true}).click();
+  await page.getByRole('button',{name:'English',exact:true}).click();
+  await page.getByText('Make this space yours.',{exact:true}).waitFor();
+  await page.reload({waitUntil:'networkidle'});
+  await page.getByText('Who will you turn to?',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'Your journal',exact:true}).click();
+  await page.getByText(/Matei 6:34/).waitFor();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('button').filter({has:page.getByText('The daily pause',{exact:true})}).click();
+  await page.getByRole('button',{name:'Begin your minute',exact:true}).click();
+  await page.getByRole('button',{name:'Pause',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Pause',exact:true}).click();
+  await screenshot('ritual');
+  assert.deepEqual(errors,[]);
+  console.log('UI smoke passed: God chat, save, journal, two voices, guarded Premium, language persistence, breathing ritual, no horizontal overflow, no page errors.');
+ }finally{await browser.close();}
+})().catch(error=>{console.error(error);process.exitCode=1;});

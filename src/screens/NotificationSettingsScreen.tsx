@@ -1,315 +1,56 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Switch,
-  TouchableOpacity,
-  Alert,
-  ScrollView
-} from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { View, Text, ScrollView, StyleSheet, Pressable, Switch, Alert, Linking, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
-import { useTranslation } from "../context/LanguageContext";
+import { useTranslation, Language } from "../context/LanguageContext";
 import { usePremium } from "../context/PremiumContext";
-import { getRandomGodMessage, getRandomDevilMessage } from "../services/notificationMessages";
-
-type Props = NativeStackScreenProps<RootStackParamList, "Notifications">;
-
-type NotificationSettings = {
-  godEnabled: boolean;
-  devilEnabled: boolean;
-};
-
-const SETTINGS_KEY = "notification_settings";
-const IDs_KEY = "notification_ids";
-
-type StoredIds = {
-  god?: string[];
-  devil?: string[];
-};
-
-export default function NotificationSettingsScreen({ navigation }: Props) {
-  const { t, language } = useTranslation();
-  const { isPremium } = usePremium();
-  const [settings, setSettings] = useState<NotificationSettings>({ godEnabled: false, devilEnabled: false });
-  const [permissionDenied, setPermissionDenied] = useState(false);
-
-  const loadSettings = useCallback(async () => {
-    const raw = await AsyncStorage.getItem(SETTINGS_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as NotificationSettings;
-        setSettings(parsed);
-      } catch (e) {
-        // ignore parse errors
-      }
+import { Icon, IconButton, Button, ui } from "../components/Primitives";
+import { palette } from "../theme/tokens";
+import { loadReminders, reconcileReminders, ReminderPreferences } from "../services/reminders";
+import { clearAllConversations } from "../services/conversations";
+import { CONTACT_EMAIL } from "../constants/legal";
+type Props=NativeStackScreenProps<RootStackParamList,"Notifications">;
+export default function NotificationSettingsScreen({navigation}:Props) {
+  const {t,language,setLanguage}=useTranslation();const {isPremium,isChecking}=usePremium();const insets=useSafeAreaInsets();
+  const [preferences,setPreferences]=useState<ReminderPreferences>({morning:false,evening:false});const preferencesRef=useRef(preferences);const [loaded,setLoaded]=useState(false);const [busy,setBusy]=useState(false);const [denied,setDenied]=useState(false);
+  useEffect(()=>{let active=true;loadReminders().then(value=>{if(active){setPreferences(value);preferencesRef.current=value;setLoaded(true);}}).catch(()=>{if(active)setLoaded(true);});return()=>{active=false;};},[]);
+  useEffect(()=>{
+    if(!loaded||isChecking||Platform.OS==="web")return;
+    let active=true;setBusy(true);
+    reconcileReminders(preferencesRef.current,language,isPremium).catch(()=>{if(active)Alert.alert(t("experience.reminderFailed"));}).finally(()=>{if(active)setBusy(false);});
+    return()=>{active=false;};
+  },[language,isPremium,isChecking,loaded,t]);
+  const toggle=async(key:keyof ReminderPreferences)=>{
+    if(busy||!loaded||isChecking)return;
+    if(key==="evening"&&!isPremium){navigation.navigate("Paywall");return;}
+    if(!preferences[key]){
+      const permission=await Notifications.requestPermissionsAsync();
+      if(permission.status!=="granted"){setDenied(true);return;}setDenied(false);
     }
-  }, []);
-
-  const requestPermission = useCallback(async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== "granted") {
-      setPermissionDenied(true);
-    } else {
-      setPermissionDenied(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    requestPermission();
-    loadSettings();
-  }, [loadSettings, requestPermission]);
-
-  useEffect(() => {
-    // Dacă nu mai e premium, dezactivează notificările pentru Diavol
-    if (!isPremium && settings.devilEnabled) {
-      (async () => {
-        const next: NotificationSettings = { ...settings, devilEnabled: false };
-        await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
-        setSettings(next);
-        await cancelCategory("devil");
-      })();
-    }
-  }, [isPremium, settings]);
-
-  const saveSettings = async (next: NotificationSettings) => {
-    setSettings(next);
-    await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
+    const next={...preferences,[key]:!preferences[key]};
+    setBusy(true);
+    try { await reconcileReminders(next,language,isPremium); preferencesRef.current=next;setPreferences(next); }
+    finally { setBusy(false); }
   };
-
-  const getStoredIds = async (): Promise<StoredIds> => {
-    const raw = await AsyncStorage.getItem(IDs_KEY);
-    if (!raw) return {};
-    try {
-      return JSON.parse(raw) as StoredIds;
-    } catch (e) {
-      return {};
-    }
-  };
-
-  const storeIds = async (ids: StoredIds) => {
-    await AsyncStorage.setItem(IDs_KEY, JSON.stringify(ids));
-  };
-
-  const cancelCategory = async (category: "god" | "devil") => {
-    const stored = await getStoredIds();
-    const ids = stored[category] || [];
-    await Promise.all(ids.map((id) => Notifications.cancelScheduledNotificationAsync(id)));
-    const updated: StoredIds = { ...stored, [category]: [] };
-    await storeIds(updated);
-  };
-
-  const getScheduleTimes = useMemo(
-    () =>
-      (category: "god" | "devil", premium: boolean) => {
-        if (category === "god") {
-          if (!premium) {
-            return [{ hour: 10, minute: 0 }];
-          }
-          return [
-            { hour: 8, minute: 0 },
-            { hour: 9, minute: 0 },
-            { hour: 10, minute: 0 },
-            { hour: 11, minute: 0 },
-            { hour: 12, minute: 0 },
-            { hour: 14, minute: 0 },
-            { hour: 16, minute: 0 },
-            { hour: 18, minute: 0 },
-            { hour: 20, minute: 0 },
-            { hour: 22, minute: 0 }
-          ];
-        }
-
-        // devil
-        return [
-          { hour: 9, minute: 30 },
-          { hour: 11, minute: 30 },
-          { hour: 13, minute: 0 },
-          { hour: 14, minute: 30 },
-          { hour: 16, minute: 0 },
-          { hour: 17, minute: 30 },
-          { hour: 19, minute: 0 },
-          { hour: 20, minute: 30 },
-          { hour: 21, minute: 30 },
-          { hour: 23, minute: 0 }
-        ];
-      },
-    []
-  );
-
-  const scheduleCategory = async (category: "god" | "devil") => {
-    const stored = await getStoredIds();
-    const times = getScheduleTimes(category, isPremium);
-
-    const schedule = category === "god" ? getRandomGodMessage : getRandomDevilMessage;
-    const langKey = language === "ro" ? "ro" : "en";
-    const ids: string[] = [];
-
-    for (const ttime of times) {
-      const msg = schedule(langKey as "en" | "ro");
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: msg.title,
-          body: msg.body
-        },
-        trigger: { hour: ttime.hour, minute: ttime.minute, repeats: true }
-      });
-      ids.push(id);
-    }
-
-    const updated: StoredIds = { ...stored, [category]: ids };
-    await storeIds(updated);
-  };
-
-  const handleToggle = async (category: "god" | "devil") => {
-    if (category === "devil" && !isPremium) {
-      navigation.navigate("Paywall");
-      return;
-    }
-
-    if (permissionDenied) {
-      Alert.alert(t("notifications.permissionDenied"));
-      return;
-    }
-
-    const key = category === "god" ? "godEnabled" : "devilEnabled";
-    const nextState: NotificationSettings = { ...settings, [key]: !settings[key] };
-    await saveSettings(nextState);
-
-    if (nextState[key]) {
-      await cancelCategory(category);
-      await scheduleCategory(category);
-    } else {
-      await cancelCategory(category);
-    }
-  };
-
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={styles.backText}>{"←"}</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>{t("notifications.title")}</Text>
-      </View>
-
-      <Text style={styles.subtitle}>{t("notifications.subtitle")}</Text>
-
-      <View style={styles.card}>
-        <TouchableOpacity style={styles.row} onPress={() => handleToggle("god")}>
-          <View style={styles.rowLeft}>
-            <Text style={styles.rowLabel}>{t("notifications.godLabel")}</Text>
-          </View>
-          <Switch
-            value={settings.godEnabled}
-            onValueChange={() => handleToggle("god")}
-            trackColor={{ true: "#ffd166", false: "#6a627a" }}
-            thumbColor={settings.godEnabled ? "#ffb347" : "#f4f3f4"}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.divider} />
-
-        <TouchableOpacity
-          style={styles.row}
-          onPress={() => handleToggle("devil")}
-          disabled={!isPremium}
-        >
-          <View style={styles.rowLeft}>
-            <Text style={styles.rowLabel}>{t("notifications.devilLabel")}</Text>
-            {!isPremium && <Text style={styles.lockText}>🔒 {t("notifications.premiumOnly")}</Text>}
-          </View>
-          {isPremium ? (
-            <Switch
-              value={settings.devilEnabled}
-              onValueChange={() => handleToggle("devil")}
-              trackColor={{ true: "#ffd166", false: "#6a627a" }}
-              thumbColor={settings.devilEnabled ? "#ffb347" : "#f4f3f4"}
-            />
-          ) : (
-            <Text style={styles.lockArrow}>{"›"}</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {permissionDenied && <Text style={styles.permission}>{t("notifications.permissionDenied")}</Text>}
-
-      <Text style={styles.info}>{t("notifications.toggleInfo")}</Text>
-    </ScrollView>
-  );
+  const deleteData=()=>Alert.alert(t("experience.deleteData"),t("experience.deleteDataConfirm"),[{text:t("experience.cancel"),style:"cancel"},{text:t("experience.clear"),style:"destructive",onPress:()=>clearAllConversations().then(()=>Alert.alert(t("experience.dataDeleted"))).catch(()=>Alert.alert(t("experience.errors.storage")))}]);
+  const manage=()=>Linking.openURL(Platform.OS==="ios"?"https://apps.apple.com/account/subscriptions":"https://play.google.com/store/account/subscriptions").catch(()=>Alert.alert(t("experience.errors.service_unavailable")));
+  return <View style={ui.screen}><ScrollView contentContainerStyle={[ui.content,{paddingTop:insets.top+12,paddingBottom:insets.bottom+28}]}>
+    <View style={ui.between}><IconButton name="chevron-back" label={t("common.back")} onPress={()=>navigation.goBack()}/><Text style={ui.eyebrow}>{t("experience.settings")}</Text><View style={{width:44}}/></View>
+    <View style={{gap:12}}><Text style={ui.title}>{t("experience.settingsTitle")}</Text><Text style={ui.body}>{t("experience.settingsBody")}</Text></View>
+    <Text style={ui.eyebrow}>{t("experience.language")}</Text>
+    <View style={styles.languages}>{([{code:"ro",label:"Română"},{code:"en",label:"English"},{code:"de",label:"Deutsch"},{code:"no",label:"Norsk"}] as {code:Language;label:string}[]).map(item=><Pressable accessibilityRole="button" accessibilityState={{selected:language===item.code}} key={item.code} disabled={busy} onPress={()=>setLanguage(item.code)} style={[styles.language,language===item.code&&styles.languageActive]}><Text style={[styles.languageText,language===item.code&&{color:palette.gold}]}>{item.label}</Text>{language===item.code&&<Icon name="checkmark" color={palette.gold} size={16}/>}</Pressable>)}</View>
+    <Text style={ui.eyebrow}>{t("experience.reminders")}</Text>
+    <View style={ui.card}><Text style={ui.body}>{t("experience.reminderBody")}</Text>{(["morning","evening"] as const).map(key=><View key={key} style={styles.reminderRow}><View style={{flex:1,gap:4}}><Text style={styles.rowTitle}>{t(`experience.${key}`)}</Text><Text style={styles.muted}>{key==="morning"?"09:00":`19:30${!isPremium?" · Premium":""}`}</Text></View><Switch accessibilityLabel={t(`experience.${key}`)} value={preferences[key]&&(key==="morning"||isPremium)} disabled={busy||!loaded||isChecking||Platform.OS==="web"} onValueChange={()=>{toggle(key).catch(()=>Alert.alert(t("experience.reminderFailed")));}} trackColor={{true:"#7D6A48",false:"#35383E"}} thumbColor={palette.ivory}/></View>)}
+      {denied&&<Button secondary label={t("experience.openSettings")} onPress={()=>{Linking.openSettings().catch(()=>{});}}/>}
+    </View>
+    <View style={ui.card}><View style={ui.row}><Icon name="sparkles-outline" color={palette.gold}/><Text style={styles.rowTitle}>{t(isPremium?"paywall.ctaActive":"common.premium")}</Text></View><Text style={ui.body}>{t("experience.premiumDescription")}</Text><Button secondary label={t(isPremium?"experience.manage":"common.goPremium")} onPress={()=>isPremium?manage():navigation.navigate("Paywall")}/></View>
+    <Text style={ui.eyebrow}>{t("experience.localData")}</Text>
+    <View style={ui.card}><Icon name="lock-closed-outline" color={palette.muted}/><Text style={ui.body}>{t("experience.dataBody")}</Text><Pressable accessibilityRole="button" onPress={deleteData} style={styles.delete}><Icon name="trash-outline" color={palette.ember} size={17}/><Text style={{color:palette.ember,fontSize:12,flex:1}}>{t("experience.deleteData")}</Text></Pressable></View>
+    <Pressable accessibilityRole="button" onPress={()=>navigation.navigate("Legal")} style={[ui.card,ui.between]}><Text style={styles.rowTitle}>{t("experience.legal")}</Text><Icon name="chevron-forward" color={palette.muted} size={18}/></Pressable>
+    <Pressable accessibilityRole="button" onPress={()=>{Linking.openURL(`mailto:${CONTACT_EMAIL}`).catch(()=>{});}} style={styles.support}><Text style={ui.body}>{t("experience.support")}</Text></Pressable>
+    <Text style={[ui.body,{fontSize:10,textAlign:"center"}]}>{t("experience.disclaimer")}</Text>
+  </ScrollView></View>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#0b0b16"
-  },
-  content: {
-    padding: 20,
-    paddingTop: 72,
-    paddingBottom: 40,
-    gap: 16
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12
-  },
-  backBtn: {
-    padding: 6
-  },
-  backText: {
-    color: "#ffd166",
-    fontSize: 18
-  },
-  title: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "800"
-  },
-  subtitle: {
-    color: "#d3d4ff"
-  },
-  card: {
-    backgroundColor: "rgba(255,255,255,0.05)",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
-    padding: 16,
-    gap: 12
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between"
-  },
-  rowLeft: {
-    gap: 6
-  },
-  rowLabel: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600"
-  },
-  lockText: {
-    color: "#ffb347",
-    fontSize: 13
-  },
-  lockArrow: {
-    color: "#ffb347",
-    fontSize: 20
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "rgba(255,255,255,0.1)"
-  },
-  permission: {
-    color: "#ff7a7a"
-  },
-  info: {
-    color: "#d3d4ff"
-  }
-});
+const styles=StyleSheet.create({languages:{flexDirection:"row",flexWrap:"wrap",gap:10},language:{flexBasis:"47%",flexGrow:1,borderRadius:14,borderWidth:1,borderColor:palette.border,backgroundColor:palette.surface,padding:16,flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:8},languageActive:{borderColor:"#82704E",backgroundColor:"#27251F"},languageText:{color:palette.text,fontSize:13},reminderRow:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:14,paddingVertical:12},rowTitle:{fontSize:14,color:palette.text},muted:{fontSize:11,color:palette.muted},delete:{minHeight:44,flexDirection:"row",alignItems:"center",gap:10},support:{minHeight:44,alignItems:"center",justifyContent:"center"}});

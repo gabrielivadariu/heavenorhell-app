@@ -1,20 +1,10 @@
-# Deploy backend on Render (HTTPS)
+# Deploy the v2 API on Render
 
-1) From `backend/`, init git if needed: `git init` (optional) and push to a repo (GitHub/GitLab) or use Render’s “Public Git Repository” URL.
-2) In Render, create a **New Web Service**:
-   - Repo: select your repo/branch that contains `/backend`.
-   - Root: `/backend` (if asked).
-   - Runtime: Node.
-   - Build command: `npm install`.
-   - Start command: `node index.js` (matching `Procfile`).
-3) Environment variables (Render dashboard):
-   - `OPENAI_API_KEY` = your key (required).
-   - `PORT` = leave blank (Render injects it); we set a hint in `render.yaml`.
-4) Deploy. Render will give you an HTTPS URL like `https://heaven-or-hell-api.onrender.com`.
-5) Update the mobile app root `.env` with:  
-   `EXPO_PUBLIC_API_BASE_URL=https://heaven-or-hell-api.onrender.com`
-6) Rebuild the iOS app (Release/Archive) and upload to TestFlight/App Store Connect.
+See [release configuration](../docs/RELEASE.md) before deployment. The previous v1 backend does not support installation sessions or Two voices.
 
-Notes:
-- `Procfile` and `render.yaml` are included for Render; you can also use the “Blueprint” deploy with `render.yaml`.
-- The backend loads `OPENAI_API_KEY` from env; no code changes needed.
+- Use `backend/` as root, `npm ci` as build command and `node index.js` as start command.
+- Set `OPENAI_API_KEY`, persistent `SESSION_SECRET`, `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_ENTITLEMENT_ID=premium`, `TRUST_PROXY_HOPS=1`, and a deliberate `DAILY_TOKEN_BUDGET`. Never expose server keys to the app.
+- Point `USAGE_STORE_PATH` at persistent storage. The included `render.yaml` uses a **paid Starter instance and persistent disk**, with automatic deploy disabled. A free ephemeral filesystem does not provide durable spending/usage limits. Nothing has been deployed or purchased by these source edits.
+- Keep one instance for the file ledger. Move the ledger to a shared transactional database before scaling to multiple instances.
+- Confirm real AI generation with available API credit, then verify `/health` reports `apiVersion: 2`. `paidChatReady` stays false without server subscription verification configuration.
+- Set the app's production `EXPO_PUBLIC_API_BASE_URL` to the new HTTPS URL, then create a new signed native build and test purchases in sandbox/TestFlight.
