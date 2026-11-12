@@ -29,6 +29,14 @@
       "autoIncrement": false
     }
   },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6755818292",
+        "appleTeamId": "BY2X3N688N"
+      }
+    }
+  },
   "cli": {
     "promptToConfigurePushNotifications": false,
     "appVersionSource": "remote"
