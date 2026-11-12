@@ -44,3 +44,5 @@ Artwork: `assets/sanctuary-portal.jpg`; [image prompt](IMAGE-PROMPT.md). The pub
 ## Media audit
 
 The user supplied five framed iPhone screenshots representing the new design. They are preserved. Old large-iPhone overrides were removed so the current set scales automatically. Five native iPad captures replace the old 2025 draft images. See [media evidence and reproduction](store-media/README.md).
+
+The final metadata audit found unanswered social-capability questions in Apple’s updated age questionnaire and an outdated 4+ rating. The app has no social feed, peer messaging or age-range API capability. Wellness topics are declared because the app includes reflection and breathing. Apple calculated 9+; the developer override is 13+ to match the existing minimum-age policy. The questionnaire was saved without requesting App Review.
