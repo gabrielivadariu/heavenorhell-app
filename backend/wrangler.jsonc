@@ -14,8 +14,8 @@
 		"OPENAI_MODEL": "gpt-4o-mini",
 		"DAILY_TOKEN_BUDGET": "300000",
 		"REVENUECAT_ENTITLEMENT_ID": "premium",
-		"PAID_CHAT_ENABLED": "false",
-		"AI_VERIFIED": "false"
+		"PAID_CHAT_ENABLED": "true",
+		"AI_VERIFIED": "true"
 	},
 	"triggers": {
 		"crons": [

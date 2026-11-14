@@ -2,7 +2,7 @@
 
 ## App Review follow-up — November 14
 
-The owner submitted build 16 on November 12. Apple rejected it on November 13 under Guideline 5 for China mainland distribution with OpenAI functionality. With explicit owner authorization, China mainland was removed from availability and the change was verified after reload. Review Notes now record this remedy. No reviewer message or resubmission was sent by this follow-up. See [the correction and prepared reply](APP-REVIEW-CHINA-2026-11-14.md). Functional release gates remain open: available API credit, real chat and native sandbox purchases/restore.
+The owner submitted build 16 on November 12. Apple rejected it on November 13 under Guideline 5 for China mainland distribution with OpenAI functionality. China mainland was excluded with explicit owner authorization and verified after reload. After the owner funded the API account, live chat validation passed and Premium availability was enabled. The owner confirmed localized price, sandbox purchase and Restore Purchases in TestFlight. Version 1.1.0 (16) was resubmitted on November 14 and App Store Connect now shows **Waiting for Review** for submission `f03b7fd2-355a-4f4d-85ca-2dc178e682b3`. Public release remains manual after approval. See [the correction](APP-REVIEW-CHINA-2026-11-14.md).
 
 
 ## Current delivery
@@ -34,11 +34,15 @@ Free allowances are God 10/day, Devil 3/day and Two voices 1/day. Verified Premi
 - Expo Doctor passes 20/21 locally; installed Xcode 26.2 is older than SDK 57 requires. EAS supplies the compatible SDK 57 build image.
 - Backend production audit reports zero vulnerabilities. Mobile dependencies have no high/critical advisories; four moderate issues remain in the Expo SDK 57 build dependency chain.
 
-## Remaining release gates
+## Live service validation — November 14
 
-The owner will provision OpenAI API credit later. No credit purchase was made. Real generation/model quality and native sandbox purchase, cancellation, pending payment, restore and entitlement activation remain unverified. `PAID_CHAT_ENABLED=false` and `AI_VERIFIED=false` deliberately keep new checkout disabled. Enable for internal sandbox validation only after real AI is working; finish those tests before public release.
+The public Workers API returned real OpenAI replies for God in Romanian, German and Norwegian, Devil in English, and structured Two voices in Romanian. A follow-up remembered the supplied name and prior suggestion. The second free Two voices request correctly returned HTTP 429 `daily_limit`. A further free reply succeeded after enabling server entitlement verification. These were synthetic QA prompts, not UI fixtures.
 
-Complete real AI and native StoreKit validation, final metadata review before requesting public App Review. The owner has since completed App Review contact fields. The China-availability correction is saved in Review Notes. The model remains configurable via `OPENAI_MODEL`; do not claim free AI or silently replace the provider. Generation uses one call per reply instead of the old detection/answer/translation chain.
+RevenueCat offerings returned HTTP 200 with default offering `current` and the approved monthly v2 product. Server Customer Info lookup returned HTTP 201 with a readable subscriber. The owner explicitly confirmed localized price, sandbox purchase and Restore Purchases on TestFlight 1.1.0 (16); this device check was reported by the owner rather than operated remotely by the agent. Pending-payment and cancellation error mapping remain covered by SDK unit tests, not a live Ask to Buy exercise.
+
+`PAID_CHAT_ENABLED=true` and `AI_VERIFIED=true` are deployed. Public HTTPS health reports `paidChatReady=true`; durable capacity and provider-failure guards remain active. TypeScript and all 36 automated tests passed after activation. The existing metered OpenAI provider and model were retained; no free AI claim or provider substitution was made.
+
+The App Review contact fields are complete. Review Notes explain China exclusion, consent, funded live service, modes/languages, subscription SKU and the TestFlight checks. The resubmission was sent and verified as Waiting for Review. Apple approval and the subsequent manual public release are still pending.
 
 ## Platform and artifacts
 

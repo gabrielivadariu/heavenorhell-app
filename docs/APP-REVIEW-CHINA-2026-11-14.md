@@ -4,7 +4,7 @@ Apple rejected iOS version 1.1.0 (16), submission `f03b7fd2-355a-4f4d-85ca-2dc17
 
 On November 14, the owner explicitly chose to exclude China mainland. The change was confirmed in App Store Connect and checked after reloading: China mainland is deselected, with the other territory selections retained. Apple says availability changes can take up to 24 hours to become visible. This is an availability change; no new binary or removal of AI disclosures from the remaining storefronts was performed.
 
-The version's Review Notes explain the selected remedy. No direct reviewer message or resubmission has been sent in this follow-up.
+The version's Review Notes explain the selected remedy. After live validation and the owner's TestFlight confirmation, version 1.1.0 (16) was resubmitted on November 14. App Store Connect shows **Waiting for Review** under the same submission ID. No separate reviewer message was sent.
 
 ## Prepared reviewer reply
 
@@ -18,8 +18,8 @@ This text is prepared for the owner to send after confirming the availability ch
 >
 > Thank you.
 
-## Remaining functional validation
+## Functional validation completed
 
-The live API still reports `paidChatReady=false`. The owner must provision available OpenAI API credit, then real chat and native sandbox purchase/restore validation must finish before resubmission. Fixing the storefront issue does not establish that those functional checks pass.
+The owner funded the API account. Live public API replies passed for all three modes and all four supported languages, including conversation memory and daily-limit enforcement. Premium flags were enabled and health reports `paidChatReady=true`. The owner confirmed price loading, sandbox purchase and Restore Purchases in TestFlight. TypeScript and 36 automated tests passed. Public release remains manual after Apple approval.
 
 [Apple availability instructions](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-for-your-app-on-the-app-store/).
