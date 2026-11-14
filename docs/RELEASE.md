@@ -1,5 +1,10 @@
 # Heaven & Hell 1.1 — release status
 
+## App Review follow-up — November 14
+
+The owner submitted build 16 on November 12. Apple rejected it on November 13 under Guideline 5 for China mainland distribution with OpenAI functionality. With explicit owner authorization, China mainland was removed from availability and the change was verified after reload. Review Notes now record this remedy. No reviewer message or resubmission was sent by this follow-up. See [the correction and prepared reply](APP-REVIEW-CHINA-2026-11-14.md). Functional release gates remain open: available API credit, real chat and native sandbox purchases/restore.
+
+
 ## Current delivery
 
 The redesigned app is saved on [release/wow-1.1](https://github.com/gabrielivadariu/heavenorhell-app/tree/release/wow-1.1). Version 1.0.3 and its Render backend remain unchanged.
@@ -8,7 +13,7 @@ The new [Cloudflare v2 API](https://heaven-hell-api-v2.livadariu-ga.workers.dev/
 
 Signed iOS version 1.1.0, build 16 [compiled successfully](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/builds/02a0a47e-fd2d-4623-8b63-f6013f5199eb) and was [uploaded for TestFlight processing](https://expo.dev/accounts/gabriellivadariu/projects/heaven-or-hell-app/submissions/ae0f2fa0-a59b-4d9c-a94e-4b1075800b12). Apple processing completed successfully; build 16 is listed in the internal Team (Expo) group. Build 15 was rejected with error 90101; build 16 restores the iPhone+iPad device family required by the published app.
 
-App Store version 1.1 promotional text, description and changes are saved as a draft, with manual release selected. App Privacy disclosures now cover Purchase History, User ID, Product Interaction and Other User Content, with matching purposes and no advertising tracking. The public privacy policy explains actual processing and the App Store privacy URL points to it. No public App Review was requested.
+App Store version 1.1 promotional text, description and changes are saved as a draft, with manual release selected. App Privacy disclosures now cover Purchase History, User ID, Product Interaction and Other User Content, with matching purposes and no advertising tracking. The public privacy policy explains actual processing and the App Store privacy URL points to it. No public App Review was requested during the initial preparation; the owner subsequently submitted build 16 as described above.
 
 ## Implemented experience
 
@@ -33,7 +38,7 @@ Free allowances are God 10/day, Devil 3/day and Two voices 1/day. Verified Premi
 
 The owner will provision OpenAI API credit later. No credit purchase was made. Real generation/model quality and native sandbox purchase, cancellation, pending payment, restore and entitlement activation remain unverified. `PAID_CHAT_ENABLED=false` and `AI_VERIFIED=false` deliberately keep new checkout disabled. Enable for internal sandbox validation only after real AI is working; finish those tests before public release.
 
-Complete real AI and native StoreKit validation, the missing App Review contact fields and final metadata review before requesting public App Review. Review notes are prepared locally but cannot be saved until contact information is supplied. The model remains configurable via `OPENAI_MODEL`; do not claim free AI or silently replace the provider. Generation uses one call per reply instead of the old detection/answer/translation chain.
+Complete real AI and native StoreKit validation, final metadata review before requesting public App Review. The owner has since completed App Review contact fields. The China-availability correction is saved in Review Notes. The model remains configurable via `OPENAI_MODEL`; do not claim free AI or silently replace the provider. Generation uses one call per reply instead of the old detection/answer/translation chain.
 
 ## Platform and artifacts
 
